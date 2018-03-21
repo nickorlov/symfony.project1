@@ -7,37 +7,83 @@ use Symfony\Component\HttpFoundation\Response;
 use Doctrine\ORM\EntityManagerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\HttpFoundation\Request;
 
 class DefaultController extends Controller
 {
     /**
-     * @Route("/")
+     * @Route("/", name="home")
      */
-    public function createAction()
+    public function createAction(Request $request)
     {
-        // you can fetch the EntityManager via $this->getDoctrine()
-        // or you can add an argument to your action: createAction(EntityManagerInterface $em)
-        $em = $this->getDoctrine()->getManager();
-
         $product = new Product();
-        $product->setName('Keyboard');
-        $product->setPrice(19.99);
-        $product->setDescription('Ergonomic and stylish!');
 
-        // tells Doctrine you want to (eventually) save the Product (no queries yet)
-        $em->persist($product);
+        $form = $this->createFormBuilder($product)
+            ->add('name', TextType::class)
+            ->add('price', TextType::class)
+            ->add('description', TextType::class)
+            ->add('save', SubmitType::class, array('label' => 'Create Product'))
+            ->getForm();
 
-        // actually executes the queries (i.e. the INSERT query)
-        $em->flush();
+        $form->handleRequest($request);
 
-        return new Response('Saved new product with id ' . $product->getId());
+        if ($form->isSubmitted() && $form->isValid()) {
+            $product = $form->getData();
+
+            $em = $this->getDoctrine()->getManager();
+            $em->persist($product);
+            $em->flush();
+
+            return new Response('Product ' . $product->getName() . ' added!');
+        }
+
+        return $this->render(
+            'default/index.html.twig',
+            array(
+                'form' => $form->createView(),
+            )
+        );
     }
 
-// if you have multiple entity managers, use the registry to fetch them
-    public function editAction()
+    /**
+     * @Route("/show/{productId}")
+     */
+    public function showAction($productId)
     {
-        $doctrine = $this->getDoctrine();
-        $em = $doctrine->getManager();
-        $em2 = $doctrine->getManager('other_connection');
+        $product = $this->getDoctrine()
+            ->getRepository(Product::class)
+            ->find($productId);
+
+        if (!$product) {
+            throw $this->createNotFoundException(
+                'No product found for id ' . $productId
+            );
+        }
+
+        return new Response(
+            '<html><body><p>' . $product->getName() . '</p><p>' . $product->getPrice() . '</p><p>' . $product->getDescription() . '</p></body></html>'
+        );
+    }
+
+    /**
+     * @Route("/update/{productId}")
+     */
+    public function updateAction($productId)
+    {
+        $em = $this->getDoctrine()->getManager();
+        $product = $em->getRepository(Product::class)->find($productId);
+
+        if (!$product) {
+            throw $this->createNotFoundException(
+                'No product found for id ' . $productId
+            );
+        }
+
+        $product->setName('New product!');
+        $em->flush();
+
+        return new Response('Updated product name with id ' . $product->getId());
     }
 }
