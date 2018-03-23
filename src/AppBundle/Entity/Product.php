@@ -12,31 +12,35 @@ use Symfony\Component\Validator\Constraints as Assert;
 class Product
 {
     /**
+     * @var int
+     *
      * @ORM\Column(type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
-     * @var int
      */
     private $id;
 
     /**
+     * @var string
+     *
      * @ORM\Column(type="string", length=100)
      * @Assert\NotBlank()
-     * @var string
      */
     private $name;
 
     /**
+     * @var float
+     *
      * @ORM\Column(type="decimal", scale=2)
      * @Assert\NotBlank()
-     * @var float
      */
     private $price;
 
     /**
+     * @var string
+     *
      * @ORM\Column(type="text")
      * @Assert\NotBlank()
-     * @var string
      */
     private $description;
 
