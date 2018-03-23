@@ -2,13 +2,12 @@
 
 namespace AppBundle\Controller;
 
-use AppBundle\Entity\Product;
+use AppBundle\Entity\Car;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\ORM\EntityManagerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
-use Symfony\Component\Form\Extension\Core\Type\MoneyType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -19,31 +18,24 @@ class DefaultController extends Controller
      */
     public function createAction(Request $request)
     {
-        $product = new Product();
+        $car = new Car();
 
-        $form = $this->createFormBuilder($product)
+        $form = $this->createFormBuilder($car)
             ->add('name', TextType::class)
-            ->add(
-                'price',
-                MoneyType::class,
-                array(
-                    'currency' => 'USD',
-                )
-            )
-            ->add('description', TextType::class)
-            ->add('save', SubmitType::class, array('label' => 'Create Product'))
+            ->add('numbers', TextType::class)
+            ->add('save', SubmitType::class, array('label' => 'Create a car'))
             ->getForm();
 
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $product = $form->getData();
+            $car = $form->getData();
 
             $em = $this->getDoctrine()->getManager();
-            $em->persist($product);
+            $em->persist($car);
             $em->flush();
 
-            return new Response('Product ' . $product->getName() . ' added!');
+            return new Response('Car "'.$car->getName().'" successfully added!');
         }
 
         return $this->render(
@@ -55,42 +47,42 @@ class DefaultController extends Controller
     }
 
     /**
-     * @Route("/show/{productId}")
+     * @Route("/show/{carId}")
      */
-    public function showAction($productId)
+    public function showAction($carId)
     {
-        $product = $this->getDoctrine()
-            ->getRepository(Product::class)
-            ->find($productId);
+        $car = $this->getDoctrine()
+            ->getRepository(Car::class)
+            ->find($carId);
 
-        if (!$product) {
+        if (!$car) {
             throw $this->createNotFoundException(
-                'No product found for id ' . $productId
+                'No car found for id '.$carId
             );
         }
 
         return new Response(
-            '<html><body><p>' . $product->getName() . '</p><p>' . $product->getPrice() . '</p><p>' . $product->getDescription() . '</p></body></html>'
+            '<html><body><p>'.$car->getName().'</p><p>'.$car->getNumbers().'</p></body></html>'
         );
     }
 
     /**
-     * @Route("/update/{productId}")
+     * @Route("/update/{carId}")
      */
-    public function updateAction($productId)
+    public function updateAction($carId)
     {
         $em = $this->getDoctrine()->getManager();
-        $product = $em->getRepository(Product::class)->find($productId);
+        $car = $em->getRepository(Car::class)->find($carId);
 
-        if (!$product) {
+        if (!$car) {
             throw $this->createNotFoundException(
-                'No product found for id ' . $productId
+                'No car found for id '.$carId
             );
         }
 
-        $product->setName('New product2');
+        $car->setName('New car2');
         $em->flush();
 
-        return new Response('Updated product name with id ' . $product->getId());
+        return new Response('Updated car name with id '.$car->getId());
     }
 }
