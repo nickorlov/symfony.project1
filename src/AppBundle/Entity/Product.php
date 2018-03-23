@@ -15,7 +15,6 @@ class Product
      * @ORM\Column(type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
-     * @Assert\NotBlank()
      * @var int
      */
     private $id;

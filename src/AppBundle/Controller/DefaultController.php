@@ -8,6 +8,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\MoneyType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -22,7 +23,13 @@ class DefaultController extends Controller
 
         $form = $this->createFormBuilder($product)
             ->add('name', TextType::class)
-            ->add('price', TextType::class)
+            ->add(
+                'price',
+                MoneyType::class,
+                array(
+                    'currency' => 'USD',
+                )
+            )
             ->add('description', TextType::class)
             ->add('save', SubmitType::class, array('label' => 'Create Product'))
             ->getForm();
@@ -81,7 +88,7 @@ class DefaultController extends Controller
             );
         }
 
-        $product->setName('New product!');
+        $product->setName('New product2');
         $em->flush();
 
         return new Response('Updated product name with id ' . $product->getId());
