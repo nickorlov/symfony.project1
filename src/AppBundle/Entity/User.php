@@ -2,14 +2,14 @@
 
 namespace AppBundle\Entity;
 
-use Symfony\Component\Security\Core\User\UserInterface;
+use FOS\UserBundle\Model\User as BaseUser;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity
- * @ORM\Table(name="user")
+ * @ORM\Table(name="`user`")
  */
-class User implements UserInterface
+class User extends BaseUser
 {
     /**
      * @var int
@@ -18,54 +18,14 @@ class User implements UserInterface
      * @ORM\GeneratedValue(strategy="AUTO")
      * @ORM\Column(type="integer")
      */
-    private $id;
+    protected $id;
 
     /**
-     * @ORM\Column(type="string", unique=true)
+     * User constructor.
      */
-    private $username;
-
-    /**
-     * @ORM\Column(type="string")
-     */
-    private $password;
-
-    /**
-     * @ORM\Column(type="string", unique=true)
-     */
-    private $apiKey;
-
-    /**
-     * @return string
-     */
-    public function getUsername()
+    public function __construct()
     {
-        return $this->username;
+        parent::__construct();
     }
 
-    /**
-     * @return array
-     */
-    public function getRoles()
-    {
-        return array('ROLE_USER');
-    }
-
-    /**
-     * @return string
-     */
-    public function getPassword()
-    {
-        return $this->password;
-    }
-
-    public function getSalt()
-    {
-    }
-
-    public function eraseCredentials()
-    {
-    }
-
-    // more getters/setters
 }
