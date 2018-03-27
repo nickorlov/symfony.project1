@@ -21,11 +21,12 @@ class User extends BaseUser
     protected $id;
 
     /**
-     * User constructor.
+     * @ORM\ManyToMany(targetEntity="AppBundle\Entity\Group")
+     * @ORM\JoinTable(name="user_group",
+     *      joinColumns={@ORM\JoinColumn(name="user_id", referencedColumnName="id")},
+     *      inverseJoinColumns={@ORM\JoinColumn(name="group_id", referencedColumnName="id")}
+     * )
      */
-    public function __construct()
-    {
-        parent::__construct();
-    }
+    protected $groups;
 
 }
