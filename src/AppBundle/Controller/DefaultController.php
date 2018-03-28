@@ -85,4 +85,12 @@ class DefaultController extends Controller
 
         return new Response('Updated car name with id '.$car->getId());
     }
+
+    /**
+     * @Route("/admin")
+     */
+    public function adminAction()
+    {
+        return new Response('<html><body>Admin page!</body></html>');
+    }
 }
